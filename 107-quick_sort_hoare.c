@@ -1,68 +1,87 @@
 #include "sort.h"
 
 /**
- * partition_h - array partition
- * @array: array to sort
- * @first: first position
- * @last: last position
- * @size: array size
- * Return: int pivot index
+ * _swap - swap between 2 pointers of int
+ *
+ * @a: first int pointer
+ * @b: second int pointer
+ * Return: void
  */
-int partition_h(int *array, int first, int last, size_t size)
+void _swap(int *a, int *b)
 {
-	int pivot = array[last], i = first - 1, j = last + 1, aux;
+	int tmp;
 
-	while (1)
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+/**
+ * hoare_partition - Hoare partition the array
+ * the pivot is part of while
+ *
+ * @array: array
+ * @left: first int pointer
+ * @right: second int pointer
+ * @size: size of the array
+ * Return: void
+ */
+int hoare_partition(int *array, int left, int right, size_t size)
+{
+	int i, j, pivot;
+
+	pivot = array[right]; /* pivot start at left */
+	i = left; /* in the for i = left + 1 */
+	/* pivot is part of the while */
+	for (i = left, j = right; "C is fun"; i++, j--)
 	{
-		do {
+		while (array[i] < pivot)
 			i++;
-		} while (array[i] < pivot);
-
-		do {
+		while (array[j] > pivot)
 			j--;
-		} while (array[j] > pivot);
-
-		if (j < i)
-			return (j);
-		if (array[i] > array[j])
-		{
-			aux = array[i];
-			array[i] = array[j];
-			array[j] = aux;
-			print_array(array, size);
-		}
+		/* while stop when j < i */
+		/* don't need to swap the pivot because it is already part of while */
+		if (j <= i)
+			return (i);
+		/* p | <p [big] --need to continue to run -- [ small] >p */
+		_swap(&array[i], &array[j]);
+		print_array(array, size);
 	}
 }
 
 /**
- * qsh - sorts an array of integers recursively
- * @array: array to sort
- * @first: first position
- * @last: last position
- * @size: array size
+ * recursive_quick_sort - recursive to the array to have quick sort
+ *
+ * @array: array
+ * @left: first int pointer
+ * @right: second int pointer
+ * @size: size of the array
+ * Return: void
  */
-void qsh(int *array, int first, int last, size_t size)
+void recursive_quick_sort(int *array, int left, int right, size_t size)
 {
-	int pivot;
+	int p;
 
-	if (first < last)
-	{
-		pivot = partition_h(array, first, last, size);
-		qsh(array, first, pivot, size);
-		qsh(array, pivot + 1, last, size);
-	}
+	if (left >= right)
+		return;
+	p = hoare_partition(array, left, right, size);
+	recursive_quick_sort(array, left, p - 1, size);
+	recursive_quick_sort(array, p, right, size);
 }
 
 /**
- * quick_sort_hoare - sorts an array of integers using the Quick
- * sort hoare algorithm  in ascending order
- * @array: array to sort
- * @size: array size
+ * quick_sort_hoare - choose a pivot and be part of while
+ * for this case pivot = last element
+ * best case - pivot is the middle value of array (O(nlog(n))
+ * worst case - sorted -> necesary we will need to run O(n^2)
+ *
+ * @array: array of integers
+ * @size: size of the array
+ * Return: void
  */
 void quick_sort_hoare(int *array, size_t size)
 {
-	if (!array || size < 2)
+	if (size <= 1)
 		return;
-
-	qsh(array, 0, size - 1, size);
+	recursive_quick_sort(array, 0, size - 1, size);
 }
